@@ -15,6 +15,7 @@ TagManager:
   - ActiveNode
   - InActiveNode
   - Start
+  - COBaseTag
   layers:
   - Default
   - TransparentFX
