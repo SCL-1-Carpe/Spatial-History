@@ -1,14 +1,14 @@
-# Magic Leap Unity Project Template
+# Magic Leap でSpatial Computingが普及した未来の観光を提示する。
 
 ## Project
 
-Hello, Cube!
+UnityとMLで「大阪城」をテーマとしたコンテンツ制作を行う。
 
 ## Versions
 
 ### Unity
 
-2019.2.x
+2019.2.15
 
 ### MLSDK
 
