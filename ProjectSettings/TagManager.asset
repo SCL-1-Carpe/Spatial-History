@@ -16,6 +16,8 @@ TagManager:
   - InActiveNode
   - Start
   - COBaseTag
+  - itorinNetwork
+  - imageStandardCube
   layers:
   - Default
   - TransparentFX

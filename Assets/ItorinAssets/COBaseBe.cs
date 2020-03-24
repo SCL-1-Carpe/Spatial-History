@@ -18,7 +18,6 @@ namespace MagicLeap{
         // Start is called before the first frame update
         void Start()
         {
-
             // Debug.Log("テストフラグ１３１");
             SceneManager.sceneLoaded += SceneLoaded;
 
@@ -34,8 +33,7 @@ namespace MagicLeap{
         {
             Debug.Log(thisScene.name);
 
-
-            if (MainHistoryName== thisScene.name)
+            if (MainHistoryName == thisScene.name)
             {
                 GameObject imageCube = GameObject.FindGameObjectWithTag("imageStandardCube");
 

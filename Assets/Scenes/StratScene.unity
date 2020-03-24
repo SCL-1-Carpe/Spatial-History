@@ -629,7 +629,7 @@ GameObject:
   - component: {fileID: 1495218537}
   m_Layer: 0
   m_Name: NetWork
-  m_TagString: Untagged
+  m_TagString: itorinNetwork
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
