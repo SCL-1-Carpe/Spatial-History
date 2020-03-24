@@ -6,7 +6,7 @@ using UnityEngine.XR.MagicLeap;
 
 public class CharacterController : MonoBehaviour
 {
-    public float walkSpeed;
+    public float walkSpeed = 0.005f;
     private Animator animator;
     [SerializeField] ControllerConnectionHandler controller;
 
