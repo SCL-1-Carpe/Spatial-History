@@ -7,6 +7,7 @@ using UnityEngine.XR.MagicLeap;
 public class CharacterController : MonoBehaviour
 {
     public float walkSpeed = 0.005f;
+    public float runSpeed = 0.01f;
     private Animator animator;
     [SerializeField] ControllerConnectionHandler controller;
 
@@ -28,24 +29,40 @@ public class CharacterController : MonoBehaviour
         float x = controller.ConnectedController.Touch1PosAndForce.x;
         float y = controller.ConnectedController.Touch1PosAndForce.y;
 
-        if (Mathf.Abs(x) > 0.3f || Mathf.Abs(y) > 0.3f)
+        if (x*x + y*y > 0.3f*0.3f)
         {
-            animator.SetBool("isWalk", true);
-            Vector3 d = (transform.position - camera.transform.position).normalized;
+            float speed = 0;
+            if (x * x + y * y > 0.7f * 0.7f)
+            {
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isRunning", true);
+                speed = runSpeed;
+            }
+            else
+            {
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isWalking", true);
+                speed = walkSpeed;
+            }
+
+            Vector3 d = (prePos - camera.transform.position).normalized;
             d.y *= 0;
+
             float axis = Vector3.Angle(new Vector3(0, 0, 1), d);
+            if (camera.transform.position.x > 0) axis *= -1;
 
-            if (camera.transform.position.x > 0)
-                axis *= -1;
-
-            transform.position = new Vector3(transform.position.x, floor.position.y, transform.position.z) + Quaternion.Euler(0, axis, 0) * new Vector3(x, 0, y) * walkSpeed;
+            transform.position = new Vector3(prePos.x, floor.position.y, prePos.z) + Quaternion.Euler(0, axis, 0) * new Vector3(x, 0, y) * speed;
 
             Vector3 diff = transform.position - prePos;
-            prePos = transform.position;
             transform.rotation = Quaternion.LookRotation(diff);
+
+            prePos = transform.position;
         }
         else
-            animator.SetBool("isWalk", false);
+        {
+            animator.SetBool("isWalking", false);
+            animator.SetBool("isWalking", false);
+        }
     }
 
 }
