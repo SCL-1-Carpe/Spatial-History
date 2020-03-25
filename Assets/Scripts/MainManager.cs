@@ -58,6 +58,10 @@ public class MainManager : MonoBehaviour
     [SerializeField] AudioClip preselect;
     [SerializeField] AudioClip initVoice;
 
+    [SerializeField] AudioClip intro1;
+    [SerializeField] AudioClip intro2;
+    [SerializeField] AudioClip space;
+
     [Header("城")]
     public GameObject[] castles;
     [Header("板")]
@@ -101,6 +105,7 @@ public class MainManager : MonoBehaviour
 
     public float awakeWaitSpeed = 2.42f;
     public float awakeSpeed;
+    public float arrowSpeed = 0.005f;
 
     [SerializeField] Text[] eraTexts;
 
@@ -255,6 +260,9 @@ public class MainManager : MonoBehaviour
     {
         Utility.SetStage(node.era, castles, planes);
         UpdateAudioAndUI(node);
+        //開戦
+        node.assets[1].SetActive(true);
+        yield return ReleaseArrow(node.assets[2], node.assets[3]);
         //着火
         node.assets[0].SetActive(true);
         yield return PanelLiftUp(node, 0.15f);
@@ -263,6 +271,8 @@ public class MainManager : MonoBehaviour
         //城の非アクティブ化
         castles[1].SetActive(false);
         castles[2].SetActive(false);
+        //戦士たちの非アクティブ化
+        node.assets[1].SetActive(false);
         if (!isFreeChoice) UpdateNode();
     }
     #endregion
@@ -311,8 +321,10 @@ public class MainManager : MonoBehaviour
 
     IEnumerator GameAwake()
     {
+        audio_Voice.PlayOneShot(intro1);
         while (!isAwakePress) yield return null;
 
+        audio_SE.PlayOneShot(space);
         //ジオラマの形成
         while (shereDissolve.localScale.x < 6f)
         {
@@ -321,8 +333,10 @@ public class MainManager : MonoBehaviour
         }
         castles[0].SetActive(true);
         firstOsakajoObj.SetActive(false);
-        _3dStartButton.SetActive(true);
         Init();
+        audio_Voice.PlayOneShot(intro2);
+        yield return new WaitForSeconds(10f);
+        _3dStartButton.SetActive(true);
     }
 
     IEnumerator PanelLiftUp(Node node, float speed)
@@ -410,6 +424,26 @@ public class MainManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         Utility.ChangeObjColor(button, color);
         button.SetActive(false);
+    }
+
+    IEnumerator ReleaseArrow(GameObject arrow1, GameObject arrow2)
+    {
+        Vector3 arrow1Pos = arrow1.transform.position;
+        Vector3 arrow2Pos = arrow2.transform.position;
+        yield return new WaitForSeconds(2f);
+        arrow1.SetActive(true);
+        arrow2.SetActive(true);
+        for (int i = 0; i < 20; i++)
+        {
+            arrow1.transform.Translate(0, arrowSpeed, arrowSpeed);
+            arrow2.transform.Translate(0, arrowSpeed, arrowSpeed);
+            yield return null;
+        }
+        arrow1.SetActive(false);
+        arrow2.SetActive(false);
+        arrow1.transform.position = arrow1Pos;
+        arrow2.transform.position = arrow2Pos;
+
     }
     #endregion
 
