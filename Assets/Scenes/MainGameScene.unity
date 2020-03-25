@@ -9399,7 +9399,7 @@ Transform:
   m_GameObject: {fileID: 1121980500}
   m_LocalRotation: {x: -0, y: 0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.9216702, y: 2.9216702, z: 2.9216702}
+  m_LocalScale: {x: 0.09, y: 0.09, z: 0.09}
   m_Children: []
   m_Father: {fileID: 648858010}
   m_RootOrder: 2
@@ -13687,6 +13687,11 @@ PrefabInstance:
     - target: {fileID: 198000011376903106, guid: 802d7b6e72c73614b91f3920ec1c73df,
         type: 3}
       propertyPath: looping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198000011376903106, guid: 802d7b6e72c73614b91f3920ec1c73df,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.a
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 198000013443611404, guid: 802d7b6e72c73614b91f3920ec1c73df,
