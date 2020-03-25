@@ -31,6 +31,8 @@ public class MainManager : MonoBehaviour
 
     [SerializeField] GameObject dissolveBuilding;
 
+    [SerializeField] CharacterController characterController;
+
     private GameObject decideEffectTargetNode;
     private GameObject freeChoiceTargetNode;
 
@@ -416,6 +418,14 @@ public class MainManager : MonoBehaviour
                 nodes[0].transform.tag = "NextWaitNode";
                 stateProcessor.SetState(ST_Play);
             }
+            else
+            {
+                StartCoroutine(characterController.Wave());
+            }
+        }
+        else
+        {
+            StartCoroutine(characterController.Wave());
         }
     }
     public void ML_OnBumperButton()

@@ -7,7 +7,6 @@ using UnityEngine.XR.MagicLeap;
 public class CharacterController : MonoBehaviour
 {
     public float walkSpeed = 0.005f;
-    public float runSpeed = 0.01f;
     private Animator animator;
     [SerializeField] ControllerConnectionHandler controller;
 
@@ -16,6 +15,8 @@ public class CharacterController : MonoBehaviour
     public Transform floor;
 
     private Vector3 prePos;
+
+    private bool isWaving = false;
 
     void Start()
     {
@@ -29,29 +30,17 @@ public class CharacterController : MonoBehaviour
         float x = controller.ConnectedController.Touch1PosAndForce.x;
         float y = controller.ConnectedController.Touch1PosAndForce.y;
 
-        if (x*x + y*y > 0.3f*0.3f)
+        if (x*x + y*y > 0.3f*0.3f && !isWaving)
         {
-            float speed = 0;
-            if (x * x + y * y > 0.7f * 0.7f)
-            {
-                animator.SetBool("isWalking", false);
-                animator.SetBool("isRunning", true);
-                speed = runSpeed;
-            }
-            else
-            {
-                animator.SetBool("isRunning", false);
-                animator.SetBool("isWalking", true);
-                speed = walkSpeed;
-            }
+            animator.SetBool("isWalking", true);
 
-            Vector3 d = (prePos - camera.transform.position).normalized;
+            Vector3 d = (transform.position - camera.transform.position).normalized;
             d.y *= 0;
 
             float axis = Vector3.Angle(new Vector3(0, 0, 1), d);
             if (camera.transform.position.x > 0) axis *= -1;
 
-            transform.position = new Vector3(prePos.x, floor.position.y, prePos.z) + Quaternion.Euler(0, axis, 0) * new Vector3(x, 0, y) * speed;
+            transform.position = new Vector3(transform.position.x, floor.position.y, transform.position.z) + Quaternion.Euler(0, axis, 0) * new Vector3(x, 0, y) * walkSpeed;
 
             Vector3 diff = transform.position - prePos;
             transform.rotation = Quaternion.LookRotation(diff);
@@ -61,8 +50,15 @@ public class CharacterController : MonoBehaviour
         else
         {
             animator.SetBool("isWalking", false);
-            animator.SetBool("isWalking", false);
         }
+    }
+
+    public IEnumerator Wave()
+    {
+        animator.SetTrigger("isWaving");
+        isWaving = true;
+        yield return new WaitForSeconds(4f);
+        isWaving = false;
     }
 
 }

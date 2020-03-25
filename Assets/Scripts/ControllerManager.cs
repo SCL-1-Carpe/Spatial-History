@@ -6,7 +6,6 @@ using ML_C_Vibe = UnityEngine.XR.MagicLeap.MLInputControllerFeedbackPatternVibe;
 
 public class ControllerManager : ControllerFeedbackExample
 {
-    [SerializeField] Animator humanAnimator;
     private MainManager mainManager;
     [SerializeField] ControllerConnectionHandler controllerConnectionHandler;
 
