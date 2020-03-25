@@ -109,7 +109,7 @@ Material:
     - _DissolveMaskOffset: 0
     - _DissolveMaskRadius: 1
     - _DissolveMaskSpace: 0
-    - _DissolveNoiseStrength: 0.04
+    - _DissolveNoiseStrength: 0.025
     - _DissolveSourceAlphaTexturesBlend: 0
     - _DissolveTriplanarMappingSpace: 0
     - _DstBlend: 0

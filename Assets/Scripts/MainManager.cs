@@ -31,10 +31,15 @@ public class MainManager : MonoBehaviour
 
     [SerializeField] GameObject dissolveBuilding;
 
+    [SerializeField] Text AwakeText;
+
     [SerializeField] CharacterController characterController;
 
     private GameObject decideEffectTargetNode;
     private GameObject freeChoiceTargetNode;
+
+    [SerializeField] Transform shereDissolve;
+    [SerializeField] GameObject firstOsakajoObj;
 
 
     public float shrinkTime = 0.2f;
@@ -92,6 +97,11 @@ public class MainManager : MonoBehaviour
 
     private bool isFreeChoice = false;
 
+    private bool isAwakePress = false;
+
+    public float awakeWaitSpeed = 2.42f;
+    public float awakeSpeed;
+
     [SerializeField] Text[] eraTexts;
 
 
@@ -133,13 +143,32 @@ public class MainManager : MonoBehaviour
 
     void Start()
     {
-        Init();
+        stateProcessor.SetState(ST_Awake);
     }
 
     void Update()
     {
         stateProcessor.Update();
     }
+
+    #region アウェイクステート
+    public void ST_Awake(bool isFirst)
+    {
+        if (isFirst)
+        {
+            StartCoroutine(GameAwake());
+        }
+        else
+        {
+            //ここに「Press」の点滅とか
+            if (!isAwakePress)
+            {
+                shereDissolve.localScale += Vector3.one * 0.0006f * Mathf.Sin(Time.realtimeSinceStartup * awakeWaitSpeed);
+                AwakeText.color = new Color(AwakeText.color.r, AwakeText.color.g, AwakeText.color.b, 0.65f + 0.35f * Mathf.Sin(Time.realtimeSinceStartup));
+            }
+        }
+    }
+    #endregion
 
     #region スタートステート
     public void ST_Start(bool isFirst)
@@ -255,9 +284,13 @@ public class MainManager : MonoBehaviour
     {
         Utility.SetStage(node.era, castles, planes);
         UpdateAudioAndUI(node);
-        node.assets[0].GetComponent<OrbitalBeamLaser>().Start_Thunder();
-        yield return new WaitForSeconds(3f);
-        node.assets[0].GetComponent<OrbitalBeamLaser>().End_Thunder();
+        node.assets[0].SetActive(true);
+        node.assets[1].SetActive(true);
+        node.assets[0].GetComponent<ParticleSystem>().Play();
+        node.assets[1].GetComponent<ParticleSystem>().Play();
+        yield return new WaitForSeconds(3.5f);
+        node.assets[0].SetActive(false);
+        node.assets[1].SetActive(false);
         castles[3].SetActive(false);
         if (!isFreeChoice) UpdateNode();
     }
@@ -275,6 +308,23 @@ public class MainManager : MonoBehaviour
     #endregion
 
     #region サブルーチン
+
+    IEnumerator GameAwake()
+    {
+        while (!isAwakePress) yield return null;
+
+        //ジオラマの形成
+        while (shereDissolve.localScale.x < 6f)
+        {
+            shereDissolve.localScale += Vector3.one * awakeSpeed;
+            yield return null;
+        }
+        castles[0].SetActive(true);
+        firstOsakajoObj.SetActive(false);
+        _3dStartButton.SetActive(true);
+        Init();
+    }
+
     IEnumerator PanelLiftUp(Node node, float speed)
     {
         while (node.panel.position.y < node.destination.position.y)
@@ -420,12 +470,24 @@ public class MainManager : MonoBehaviour
             }
             else
             {
-                StartCoroutine(characterController.Wave());
+                if (!isAwakePress)
+                {
+                    isAwakePress = true;
+                    AwakeText.gameObject.SetActive(false);
+                }
+                else
+                    StartCoroutine(characterController.Wave());
             }
         }
         else
         {
-            StartCoroutine(characterController.Wave());
+            if (!isAwakePress)
+            {
+                isAwakePress = true;
+                AwakeText.gameObject.SetActive(false);
+            }
+            else
+                StartCoroutine(characterController.Wave());
         }
     }
     public void ML_OnBumperButton()
