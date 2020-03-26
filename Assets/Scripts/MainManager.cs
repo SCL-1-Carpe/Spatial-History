@@ -27,15 +27,12 @@ public class MainManager : MonoBehaviour
     [SerializeField] GameObject _3dStartButton;
     [SerializeField] GameObject _3dRebootButton;
 
-    [SerializeField] GameObject decideEffect;
-
     [SerializeField] GameObject dissolveBuilding;
 
     [SerializeField] Text AwakeText;
 
     [SerializeField] CharacterController characterController;
 
-    private GameObject decideEffectTargetNode;
     private GameObject freeChoiceTargetNode;
 
     [SerializeField] Transform shereDissolve;
@@ -205,7 +202,6 @@ public class MainManager : MonoBehaviour
         {
             //説明の赤印の回転
             indicater.Rotate(new Vector3(2f, 0, 0));
-            Utility.Alignment(decideEffect, decideEffectTargetNode);
         }
     }
     #endregion
@@ -258,21 +254,21 @@ public class MainManager : MonoBehaviour
     public void Event_1615() { StartCoroutine(Process_1615(currentNode)); }
     IEnumerator Process_1615(Node node)
     {
+        GameObject fire = node.assets[0], warAnim = node.assets[1];
         Utility.SetStage(node.era, castles, planes);
         UpdateAudioAndUI(node);
         //開戦
-        node.assets[1].SetActive(true);
+        warAnim.SetActive(true);
         yield return ReleaseArrow(node.assets[2], node.assets[3]);
+
         //着火
-        node.assets[0].SetActive(true);
-        yield return PanelLiftUp(node, 0.15f);
-        //鎮火
-        node.assets[0].SetActive(false);
-        //城の非アクティブ化
-        castles[1].SetActive(false);
-        castles[2].SetActive(false);
-        //戦士たちの非アクティブ化
-        node.assets[1].SetActive(false);
+        fire.SetActive(true);
+        yield return PanelLiftDown(node, 0.15f);
+
+        //鎮火、非アクティブ化
+        fire.SetActive(false);
+        warAnim.SetActive(false);
+
         if (!isFreeChoice) UpdateNode();
     }
     #endregion
@@ -292,16 +288,26 @@ public class MainManager : MonoBehaviour
     public void Event_1665() { StartCoroutine(Process_1665(currentNode)); }
     IEnumerator Process_1665(Node node)
     {
+        GameObject lightnig = node.assets[0], cloud = node.assets[1], dissolveShere = node.assets[2], fire = node.assets[3];
         Utility.SetStage(node.era, castles, planes);
         UpdateAudioAndUI(node);
-        node.assets[0].SetActive(true);
-        node.assets[1].SetActive(true);
-        node.assets[0].GetComponent<ParticleSystem>().Play();
-        node.assets[1].GetComponent<ParticleSystem>().Play();
-        yield return new WaitForSeconds(3.5f);
-        node.assets[0].SetActive(false);
-        node.assets[1].SetActive(false);
-        castles[3].SetActive(false);
+        //雷発生
+        lightnig.SetActive(true);
+        cloud.SetActive(true);
+        lightnig.GetComponent<ParticleSystem>().Play();
+        cloud.GetComponent<ParticleSystem>().Play();
+        //落ちるまで待つ
+        yield return new WaitForSeconds(1.74f);
+        dissolveShere.transform.localScale = Vector3.one * 0.334f;
+        fire.SetActive(true);
+        //火災
+        yield return new WaitForSeconds(2f);
+        //非アクティブなど
+        fire.SetActive(false);
+        dissolveShere.transform.localScale = Vector3.one * 0.0001f;
+        lightnig.SetActive(false);
+        cloud.SetActive(false);
+        castles[4].SetActive(false);
         if (!isFreeChoice) UpdateNode();
     }
     #endregion
@@ -405,20 +411,6 @@ public class MainManager : MonoBehaviour
         nodeIndicater.transform.localScale = Vector3.one * largeScale_Max;
     }
 
-    IEnumerator DecideEffectGo(Node node)
-    {
-        decideEffectTargetNode = node.transform.gameObject;
-        Utility.Alignment(decideEffect.transform, node.transform);
-        decideEffect.SetActive(true);
-        while (decideEffect.transform.localScale.x < 3000f)
-        {
-            decideEffect.transform.localScale *= 1.1f;
-            yield return null;
-        }
-        decideEffect.SetActive(false);
-        decideEffect.transform.localScale = Vector3.one * 30f;
-
-    }
     IEnumerator InvisibleUIButton(GameObject button, Color color)
     {
         yield return new WaitForSeconds(1f);
@@ -469,7 +461,6 @@ public class MainManager : MonoBehaviour
                 currentNode.process.Invoke();
                 //タグを変えることによる選択できないようにする
                 currentNode.transform.tag = "ActiveNode";
-                StartCoroutine(DecideEffectGo(currentNode));
             }
             else if (tag == "FreeChoiceNode")
             {
