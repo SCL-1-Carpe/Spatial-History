@@ -11,10 +11,12 @@ public class SceneLoader : MonoBehaviour
     [SerializeField,Tooltip("the scene you want to load")] string ToSceneName;
 
     [SerializeField, Tooltip("the time you need to load next scene")] float LoadTime = 0 ;
-    
+
+
     // Start is called before the first frame update
     void Start()
     {
+
         
     }
 
@@ -40,6 +42,8 @@ public class SceneLoader : MonoBehaviour
         if (ToSceneName!=null)
         {
             SceneManager.LoadScene(ToSceneName);
+
+
         }
         else
         {

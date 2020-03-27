@@ -8,10 +8,7 @@ namespace MagicLeap{
 
     public class COBaseBe : MonoBehaviour
     {
-        //[SerializeField] ImageTrackingExample A;
-        //[SerializeField] GameObject ParentM;
         [SerializeField] string MainHistoryName;
-
 
         [System.NonSerialized] public bool HinannKanryou=true;
 
@@ -40,6 +37,8 @@ namespace MagicLeap{
                 if (imageCube!=null)
                 {
                     gameObject.transform.parent = imageCube.transform;
+
+
                 }
                 else
                 {
