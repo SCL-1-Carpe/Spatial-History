@@ -26,10 +26,9 @@ public class ControllerManager : ControllerFeedbackExample
     {
         MLInputController controller = controllerConnectionHandler.ConnectedController;
         if (controller != null && controller.Id == controllerId && button == MLInputControllerButton.Bumper)
-        {
-            controller.StartFeedbackPatternVibe(ML_C_Vibe.ForceDown, ML_C_Intensity.Medium);
             mainManager.ML_OnBumperButton();
-        }
+        else if (controller != null && controller.Id == controllerId && button == MLInputControllerButton.HomeTap)
+            mainManager.AllInit();
     }
 
     public override void HandleOnButtonUp(byte controllerId, MLInputControllerButton button)

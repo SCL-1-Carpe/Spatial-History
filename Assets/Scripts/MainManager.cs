@@ -14,7 +14,7 @@ public class MainManager : MonoBehaviour
 
     [SerializeField] Transform controllerTip;
 
-    public float distance = 10f;
+    public float rayDistance = 10f;
 
     [SerializeField] Text explainText;
 
@@ -35,7 +35,7 @@ public class MainManager : MonoBehaviour
 
     private GameObject freeChoiceTargetNode;
 
-    [SerializeField] Transform shereDissolve;
+    [SerializeField] Transform sphereDissolve;
     [SerializeField] GameObject firstOsakajoObj;
 
 
@@ -44,27 +44,35 @@ public class MainManager : MonoBehaviour
     public float largeScale = 1.2f;
     public float shrinkScale_Min = 0.23f;
     public float largeScale_Max = 1.5f;
-    public float panelSpeed = 0.07f;
+    public float planeSpeed = 0.15f;
+
+    private bool isFreeChoice = false;
+
+    private bool isAwakePress = false;
+
+    public float awakeWaitSpeed = 2.42f;
+    public float awakeSpeed;
+    public float arrowSpeed = 0.005f;
+    private bool canAllInit = false;
 
     [SerializeField] Transform plane_UI;
     [SerializeField] Transform planeStart;
 
+    [Header("Audio"), Header("----------")]
     [SerializeField] AudioSource audio_SE;
     [SerializeField] AudioSource audio_Voice;
-    [SerializeField] AudioClip select;
-    [SerializeField] AudioClip preselect;
-    [SerializeField] AudioClip initVoice;
-
-    [SerializeField] AudioClip intro1;
-    [SerializeField] AudioClip intro2;
-    [SerializeField] AudioClip space;
+    [SerializeField] AudioClip clip_Select, clip_PreSelect;
+    [SerializeField] AudioClip clip_Intro, clip_OpeExplain;
+    [SerializeField] AudioClip clip_worldMake;
 
     [Header("城")]
     public GameObject[] castles;
     [Header("板")]
     public GameObject[] planes;
-    public Material nodeInactiveMaterial, nodeActiveMaterial;
-
+    [Header("時代テキスト")]
+    public Text[] eraTexts;
+    //public Material nodeInactiveMaterial, nodeActiveMaterial;
+    
     #region 時代の構造体
     [System.Serializable]
     public struct Node
@@ -95,18 +103,6 @@ public class MainManager : MonoBehaviour
     #endregion
 
     private Dictionary<string, int> nodeDictionary = new Dictionary<string, int>();
-
-    private bool isFreeChoice = false;
-
-    private bool isAwakePress = false;
-
-    public float awakeWaitSpeed = 2.42f;
-    public float awakeSpeed;
-    public float arrowSpeed = 0.005f;
-
-    [SerializeField] Text[] eraTexts;
-
-
     #endregion
 
     /**********************************************************************************/
@@ -122,9 +118,10 @@ public class MainManager : MonoBehaviour
             nodes[i].transform.tag = "InActiveNode";
             nodes[i].myIndex = i;
             nodeDictionary[nodes[i].transform.name] = nodes[i].myIndex;
-            nodes[i].transform.gameObject.GetComponent<Renderer>().material = nodeInactiveMaterial;
+            Utility.ChangeObjColor(nodes[i].transform.gameObject, Color.red);
+            //nodes[i].transform.gameObject.GetComponent<Renderer>().material = nodeInactiveMaterial;
             eraTexts[i].transform.Rotate(90, 0, 0);
-            eraTexts[i].color = new Color(255f, 255f, 255f, 0);
+            eraTexts[i].transform.gameObject.SetActive(false);
         }
         currentNode = nodes[0];
 
@@ -133,11 +130,10 @@ public class MainManager : MonoBehaviour
         //初期舞台セット
         Utility.SetStage(currentNode.era, castles, planes);
 
-        explainText.text = "";
+        explainText.text = string.Empty;
         _3dStartButton.SetActive(true);
         indicater.gameObject.SetActive(false);
-        nodeIndicater.SetActive(false);
-        nodeSelectEffect.SetActive(false);
+        SetNodeEffect(NodeEffect.INIT);
         //初期コンテンツを開始
         stateProcessor.SetState(ST_Start);
     }
@@ -165,8 +161,8 @@ public class MainManager : MonoBehaviour
             //ここに「Press」の点滅とか
             if (!isAwakePress)
             {
-                shereDissolve.localScale += Vector3.one * 0.0006f * Mathf.Sin(Time.realtimeSinceStartup * awakeWaitSpeed);
-                AwakeText.color = new Color(AwakeText.color.r, AwakeText.color.g, AwakeText.color.b, 0.65f + 0.35f * Mathf.Sin(Time.realtimeSinceStartup));
+                sphereDissolve.localScale += Vector3.one * 0.0006f * Mathf.Sin(Time.realtimeSinceStartup * awakeWaitSpeed);
+                AwakeText.color = new Color(AwakeText.color.r, AwakeText.color.g, AwakeText.color.b, 0.5f + 0.35f * Mathf.Sin(Time.realtimeSinceStartup * 1.5f));
             }
         }
     }
@@ -223,7 +219,7 @@ public class MainManager : MonoBehaviour
             //Rayはコントローラの先端から照射
             Ray ray = new Ray(controllerTip.position, controllerTip.forward);
             RaycastHit hitInfo;
-            if (Physics.Raycast(ray, out hitInfo, distance))
+            if (Physics.Raycast(ray, out hitInfo, rayDistance))
             {
                 GameObject hitObj = hitInfo.collider.gameObject;
 
@@ -231,7 +227,7 @@ public class MainManager : MonoBehaviour
                 {
                     freeChoiceTargetNode = hitObj;
                     Utility.ChangeObjColor(nodeSelectEffect, Color.white);
-                    audio_SE.PlayOneShot(preselect);
+                    audio_SE.PlayOneShot(clip_PreSelect);
                     explainText.text = nodes[nodeDictionary[freeChoiceTargetNode.name]].explain;
                 }
             }
@@ -245,7 +241,7 @@ public class MainManager : MonoBehaviour
     {
         Utility.SetStage(node.era, castles, planes);
         UpdateAudioAndUI(node);
-        yield return PanelLiftDown(node, 0.15f);
+        yield return PlaneLiftDown(node, 0.15f);
         if (!isFreeChoice) UpdateNode();
     }
     #endregion
@@ -263,7 +259,7 @@ public class MainManager : MonoBehaviour
 
         //着火
         fire.SetActive(true);
-        yield return PanelLiftDown(node, 0.15f);
+        yield return PlaneLiftDown(node, 0.15f);
 
         //鎮火、非アクティブ化
         fire.SetActive(false);
@@ -279,7 +275,7 @@ public class MainManager : MonoBehaviour
     {
         Utility.SetStage(node.era, castles, planes);
         UpdateAudioAndUI(node);
-        yield return PanelLiftUp(node, 0.15f);
+        yield return PlaneLiftUp(node, 0.15f);
         if (!isFreeChoice) UpdateNode();
     }
     #endregion
@@ -288,23 +284,22 @@ public class MainManager : MonoBehaviour
     public void Event_1665() { StartCoroutine(Process_1665(currentNode)); }
     IEnumerator Process_1665(Node node)
     {
-        GameObject lightnig = node.assets[0], cloud = node.assets[1], dissolveShere = node.assets[2], fire = node.assets[3];
+        GameObject lightnig = node.assets[0], cloud = node.assets[1], fire = node.assets[2];
+        Transform dissolveShere = node.panel;
         Utility.SetStage(node.era, castles, planes);
         UpdateAudioAndUI(node);
-        //雷発生
+        //落雷
         lightnig.SetActive(true);
         cloud.SetActive(true);
-        lightnig.GetComponent<ParticleSystem>().Play();
-        cloud.GetComponent<ParticleSystem>().Play();
         //落ちるまで待つ
         yield return new WaitForSeconds(1.74f);
-        dissolveShere.transform.localScale = Vector3.one * 0.334f;
-        fire.SetActive(true);
+        dissolveShere.localScale = Vector3.one * 0.334f;
         //火災
+        fire.SetActive(true);
         yield return new WaitForSeconds(2f);
         //非アクティブなど
         fire.SetActive(false);
-        dissolveShere.transform.localScale = Vector3.one * 0.0001f;
+        dissolveShere.localScale = Vector3.one * 0.0001f;
         lightnig.SetActive(false);
         cloud.SetActive(false);
         castles[4].SetActive(false);
@@ -318,7 +313,7 @@ public class MainManager : MonoBehaviour
     {
         Utility.SetStage(node.era, castles, planes);
         UpdateAudioAndUI(node);
-        yield return PanelLiftUp(node, 0.15f);
+        yield return PlaneLiftUp(node, 0.15f);
         if (!isFreeChoice) UpdateNode();
     }
     #endregion
@@ -327,62 +322,56 @@ public class MainManager : MonoBehaviour
 
     IEnumerator GameAwake()
     {
-        audio_Voice.PlayOneShot(intro1);
+        audio_Voice.PlayOneShot(clip_Intro);
+        yield return new WaitForSeconds(5f);
+        AwakeText.transform.parent.gameObject.SetActive(true);
+        
+        //トリガー待ち
         while (!isAwakePress) yield return null;
 
-        audio_SE.PlayOneShot(space);
+        audio_SE.PlayOneShot(clip_worldMake);
         //ジオラマの形成
-        while (shereDissolve.localScale.x < 6f)
+        while (sphereDissolve.localScale.x < 6f)
         {
-            shereDissolve.localScale += Vector3.one * awakeSpeed;
+            sphereDissolve.localScale += Vector3.one * awakeSpeed;
             yield return null;
         }
         castles[0].SetActive(true);
         firstOsakajoObj.SetActive(false);
         Init();
-        audio_Voice.PlayOneShot(intro2);
-        yield return new WaitForSeconds(10f);
-        _3dStartButton.SetActive(true);
+        audio_Voice.PlayOneShot(clip_OpeExplain);
     }
 
-    IEnumerator PanelLiftUp(Node node, float speed)
+    IEnumerator PlaneLiftUp(Node node, float speed)
     {
         while (node.panel.position.y < node.destination.position.y)
         {
             node.panel.position += new Vector3(0, Time.deltaTime * speed, 0);
-            //node.panel.position = Vector3.SlerpUnclamped(node.panel.position, node.destination.position, speed);
             yield return null;
         }
     }
 
-    IEnumerator PanelLiftDown(Node node, float speed)
+    IEnumerator PlaneLiftDown(Node node, float speed)
     {
         while (node.panel.position.y > node.destination.position.y)
         {
             node.panel.position -= new Vector3(0, Time.deltaTime * speed, 0);
-            //node.panel.position = Vector3.SlerpUnclamped(node.panel.position, node.destination.position, speed);
             yield return null;
         }
     }
 
-    IEnumerator ActiveNextNode(Node preNode, Node node, Transform panel)
+    IEnumerator ActiveNextNode(Node node, Transform plane)
     {
-        //ノードインディケーターを縮小化
+        //縮小化
         yield return Shrink();
-        //ノードの色を青くする
-        if (preNode.era != node.era)
-            preNode.transform.gameObject.GetComponent<Renderer>().material = nodeActiveMaterial;
         //移動
-        while (Vector3.Distance(panel.position, node.transform.position) > 0.007f)
+        while (Vector3.Distance(plane.position, node.transform.position) > 0.007f)
         {
-            //panel.position = Vector3.SlerpUnclamped(panel.position, node.transform.position, Time.deltaTime * panelSpeed);
-            Vector3 vec = (node.transform.position - panel.position).normalized;
-            var pos = panel.position;
-            pos += vec * Time.deltaTime * panelSpeed;
-            panel.position = pos;
+            Vector3 vec = (node.transform.position - plane.position).normalized;
+            plane.position += vec * Time.deltaTime * planeSpeed;
             yield return null;
         }
-        Utility.Alignment(panel, node.transform);
+        Utility.Alignment(plane, node.transform);
         //拡大化
         yield return EnLarge(node);
     }
@@ -399,13 +388,12 @@ public class MainManager : MonoBehaviour
 
     IEnumerator EnLarge(Node node)
     {
-        Text eraText = eraTexts[node.myIndex];
-        eraText.color = new Color(255f, 255f, 255f, 255f);
-        float theta = 90f / 11f;
+        eraTexts[node.myIndex].transform.gameObject.SetActive(true);
+        float theta = -90f / 11f;
         while (nodeIndicater.transform.localScale.x < largeScale_Max)
         {
             nodeIndicater.transform.localScale *= largeScale;
-            eraText.transform.Rotate(-theta, 0, 0);
+            eraTexts[node.myIndex].transform.Rotate(theta, 0, 0);
             yield return null;
         }
         nodeIndicater.transform.localScale = Vector3.one * largeScale_Max;
@@ -437,6 +425,19 @@ public class MainManager : MonoBehaviour
         arrow2.transform.position = arrow2Pos;
 
     }
+    IEnumerator SetAllInit()
+    {
+        _3dStartButton.transform.gameObject.SetActive(false);
+        castles[0].SetActive(false);
+        firstOsakajoObj.SetActive(true);
+        audio_SE.PlayOneShot(clip_worldMake);
+        while (sphereDissolve.localScale.x > 0.09f)
+        {
+            sphereDissolve.localScale -= Vector3.one * awakeSpeed;
+            yield return null;
+        }
+        stateProcessor.SetState(ST_Awake);
+    }
     #endregion
 
     #region コントローラ関連
@@ -448,7 +449,7 @@ public class MainManager : MonoBehaviour
         //Rayはコントローラの先端から照射
         Ray ray = new Ray(controllerTip.position, controllerTip.forward);
         RaycastHit hitInfo;
-        if (Physics.Raycast(ray, out hitInfo, distance))
+        if (Physics.Raycast(ray, out hitInfo, rayDistance))
         {
             string tag = hitInfo.collider.tag;
 
@@ -456,7 +457,7 @@ public class MainManager : MonoBehaviour
             {
                 indicater.gameObject.SetActive(true);
                 //決定のSEを流す
-                audio_SE.PlayOneShot(select);
+                audio_SE.PlayOneShot(clip_Select);
                 //各ノードに割り振られた処理を開始
                 currentNode.process.Invoke();
                 //タグを変えることによる選択できないようにする
@@ -465,7 +466,7 @@ public class MainManager : MonoBehaviour
             else if (tag == "FreeChoiceNode")
             {
                 //決定のSEを流す
-                audio_SE.PlayOneShot(select);
+                audio_SE.PlayOneShot(clip_Select);
                 //セレクトエフェクトのカラーを決定色(Green)にする
                 Utility.ChangeObjColor(nodeSelectEffect, Color.green);
                 //選択したオブジェクトからノードを検索してcurrentNodeに設定
@@ -474,51 +475,32 @@ public class MainManager : MonoBehaviour
             }
             else if (tag == "Init")
             {
+                canAllInit = true;
                 //決定のSEを流す
-                audio_SE.PlayOneShot(select);
+                audio_SE.PlayOneShot(clip_Select);
                 Utility.ChangeObjColor(_3dRebootButton, Color.green);
                 StartCoroutine(InvisibleUIButton(_3dRebootButton, Color.white));
-                audio_Voice.PlayOneShot(initVoice);
                 Init();
             }
             else if (tag == "Start")
             {
+                canAllInit = false;
                 //決定のSEを流す
-                audio_SE.PlayOneShot(select);
+                audio_SE.PlayOneShot(clip_Select);
                 Utility.ChangeObjColor(_3dStartButton, Color.green);
                 StartCoroutine(InvisibleUIButton(_3dStartButton, Color.white));
-                nodeIndicater.SetActive(true);
+                SetNodeEffect(NodeEffect.AUTO);
                 //ノードインディケーターを初期位置まで移動
-                StartCoroutine(ActiveNextNode(nodes[0], nodes[0], plane_UI));
+                StartCoroutine(ActiveNextNode(nodes[0], plane_UI));
                 nodes[0].transform.tag = "NextWaitNode";
                 stateProcessor.SetState(ST_Play);
             }
-            else
-            {
-                if (!isAwakePress)
-                {
-                    isAwakePress = true;
-                    AwakeText.gameObject.SetActive(false);
-                }
-                else
-                    StartCoroutine(characterController.Wave());
-            }
+            else WaitStart();
         }
-        else
-        {
-            if (!isAwakePress)
-            {
-                isAwakePress = true;
-                AwakeText.gameObject.SetActive(false);
-            }
-            else
-                StartCoroutine(characterController.Wave());
-        }
+        else WaitStart();
     }
-    public void ML_OnBumperButton()
-    {
-        dissolveBuilding.transform.Translate(0, -0.01f, 0);
-    }
+    public void ML_OnBumperButton() {dissolveBuilding.transform.Translate(0, -0.01f, 0);}
+    public void AllInit(){ if (canAllInit) StartCoroutine(SetAllInit());}
     #endregion
 
     #region ノードのアップデート関連
@@ -528,21 +510,21 @@ public class MainManager : MonoBehaviour
     /// </summary>
     public void UpdateNode()
     {
+        Utility.ChangeObjColor(currentNode.transform.gameObject, Color.blue);
+        //currentNode.transform.gameObject.GetComponent<Renderer>().material = nodeActiveMaterial;
         int nextIndex = currentNode.myIndex + 1;
         if (nextIndex < nodes.Length)
         {
-            Node preNode = currentNode;
             currentNode = nodes[nextIndex];
             currentNode.transform.tag = "NextWaitNode";
             //ノードインディケーターの移動
-            StartCoroutine(ActiveNextNode(preNode, currentNode, plane_UI));
+            StartCoroutine(ActiveNextNode(currentNode, plane_UI));
         }
         //最後のノードのイベントが終わったときはフリー選択モードとなる
         else
         {
             //パネルずらし
-            plane_UI.localPosition += new Vector3(1f, 0, 0);
-            currentNode.transform.gameObject.GetComponent<Renderer>().material = nodeActiveMaterial;
+            plane_UI.localPosition += Vector3.right;
             FreeChoiceAvtivate();
         }
     }
@@ -560,16 +542,23 @@ public class MainManager : MonoBehaviour
     #endregion
 
     #region その他の関数
+    public void WaitStart()
+    {
+        if (!isAwakePress)
+        {
+            isAwakePress = true;
+            AwakeText.transform.parent.gameObject.SetActive(false);
+        }
+        else
+            StartCoroutine(characterController.Wave());
+    }
     /// <summary>
     /// ストーリーモードからフリーチョイスモードへ
     /// </summary>
     public void FreeChoiceAvtivate()
     {
         freeChoiceTargetNode = currentNode.transform.gameObject;
-        //セレクトエフェクトのアクティブ化
-        nodeSelectEffect.SetActive(true);
-        //インディケーターは非アクティブ化
-        nodeIndicater.SetActive(false);
+        SetNodeEffect(NodeEffect.FREE);
         //イニシャライズボタンのアクティブ化
         _3dRebootButton.SetActive(true);
         //アップデートモードの変更
@@ -577,6 +566,28 @@ public class MainManager : MonoBehaviour
         //タグを変える
         for (int i = 0; i < nodes.Length; i++)
             nodes[i].transform.tag = "FreeChoiceNode";
+    }
+
+    public enum NodeEffect { INIT, AUTO, FREE }
+    public void SetNodeEffect(NodeEffect ne)
+    {
+        switch (ne)
+        {
+            case NodeEffect.INIT:
+                nodeIndicater.SetActive(false);
+                nodeSelectEffect.SetActive(false);
+                break;
+            case NodeEffect.AUTO:
+                nodeIndicater.SetActive(true);
+                nodeSelectEffect.SetActive(false);
+                break;
+            case NodeEffect.FREE:
+                nodeIndicater.SetActive(false);
+                nodeSelectEffect.SetActive(true);
+                break;
+            default:
+                break;
+        }
     }
     #endregion
 }
