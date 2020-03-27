@@ -2338,6 +2338,9 @@ MonoBehaviour:
   - {fileID: 1256123411}
   - {fileID: 702691569}
   - {fileID: 942428249}
+  nodeInactiveMaterial: {fileID: 2100000, guid: ffba208e229b85c43b0eb04ec10933a8,
+    type: 2}
+  nodeActiveMaterial: {fileID: 2100000, guid: 470870a6c787ec34e91ae1b351bc4e15, type: 2}
   nodes:
   - era: 1585
     explain: "\u8C4A\u81E3\u79C0\u983C\u306B\u3088\u308B\u5927\u962A\u57CE\u5929\u5B88\u306E\u5B8C\u6210"
@@ -14157,7 +14160,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1890456634
 RectTransform:
   m_ObjectHideFlags: 0

@@ -71,7 +71,7 @@ public class MainManager : MonoBehaviour
     public GameObject[] planes;
     [Header("時代テキスト")]
     public Text[] eraTexts;
-    //public Material nodeInactiveMaterial, nodeActiveMaterial;
+    public Material nodeInactiveMaterial, nodeActiveMaterial;
     
     #region 時代の構造体
     [System.Serializable]
@@ -118,8 +118,8 @@ public class MainManager : MonoBehaviour
             nodes[i].transform.tag = "InActiveNode";
             nodes[i].myIndex = i;
             nodeDictionary[nodes[i].transform.name] = nodes[i].myIndex;
-            Utility.ChangeObjColor(nodes[i].transform.gameObject, Color.red);
-            //nodes[i].transform.gameObject.GetComponent<Renderer>().material = nodeInactiveMaterial;
+            //Utility.ChangeObjColor(nodes[i].transform.gameObject, Color.red);
+            nodes[i].transform.gameObject.GetComponent<Renderer>().material = nodeInactiveMaterial;
             eraTexts[i].transform.Rotate(90, 0, 0);
             eraTexts[i].transform.gameObject.SetActive(false);
         }
@@ -389,11 +389,11 @@ public class MainManager : MonoBehaviour
     IEnumerator EnLarge(Node node)
     {
         eraTexts[node.myIndex].transform.gameObject.SetActive(true);
-        float theta = -90f / 11f;
+        float theta = 90f / 11f;
         while (nodeIndicater.transform.localScale.x < largeScale_Max)
         {
             nodeIndicater.transform.localScale *= largeScale;
-            eraTexts[node.myIndex].transform.Rotate(theta, 0, 0);
+            eraTexts[node.myIndex].transform.Rotate(-theta, 0, 0);
             yield return null;
         }
         nodeIndicater.transform.localScale = Vector3.one * largeScale_Max;
@@ -427,6 +427,7 @@ public class MainManager : MonoBehaviour
     }
     IEnumerator SetAllInit()
     {
+        isAwakePress = false;
         _3dStartButton.transform.gameObject.SetActive(false);
         castles[0].SetActive(false);
         firstOsakajoObj.SetActive(true);
@@ -510,8 +511,8 @@ public class MainManager : MonoBehaviour
     /// </summary>
     public void UpdateNode()
     {
-        Utility.ChangeObjColor(currentNode.transform.gameObject, Color.blue);
-        //currentNode.transform.gameObject.GetComponent<Renderer>().material = nodeActiveMaterial;
+        //Utility.ChangeObjColor(currentNode.transform.gameObject, Color.blue);
+        currentNode.transform.gameObject.GetComponent<Renderer>().material = nodeActiveMaterial;
         int nextIndex = currentNode.myIndex + 1;
         if (nextIndex < nodes.Length)
         {
