@@ -34,12 +34,8 @@ namespace MagicLeap
         private string _prefix;
         private string _eventString;
 
-        [SerializeField, Tooltip("Game Object showing the axis")]
-        private GameObject _axis = null;
-        [SerializeField, Tooltip("Game Object showing the tracking cube")]
-        private GameObject _trackingCube = null;
-        [SerializeField, Tooltip("Game Object showing the demo")]
-        private GameObject _demo = null;
+        [SerializeField]
+        private GameObject georama = null;
 
         private ImageTrackingExample.ViewMode _lastViewMode = ImageTrackingExample.ViewMode.All;
         #endregion
@@ -50,21 +46,9 @@ namespace MagicLeap
         /// </summary>
         void Awake()
         {
-            if (null == _axis)
+            if (null == georama)
             {
                 Debug.LogError("Error: ImageTrackingVisualizer._axis is not set, disabling script.");
-                enabled = false;
-                return;
-            }
-            if (null == _trackingCube)
-            {
-                Debug.LogError("Error: ImageTrackingVisualizer._trackingCube is not set, disabling script.");
-                enabled = false;
-                return;
-            }
-            if (null == _demo)
-            {
-                Debug.LogError("Error: ImageTrackingVisualizer._demo is not set, disabling script.");
                 enabled = false;
                 return;
             }
@@ -127,24 +111,7 @@ namespace MagicLeap
             switch (_lastViewMode)
             {
                 case ImageTrackingExample.ViewMode.All:
-                    _axis.SetActive(_targetFound);
-                    _trackingCube.SetActive(_targetFound);
-                    _demo.SetActive(_targetFound);
-                    break;
-                case ImageTrackingExample.ViewMode.AxisOnly:
-                    _axis.SetActive(_targetFound);
-                    _trackingCube.SetActive(false);
-                    _demo.SetActive(false);
-                    break;
-                case ImageTrackingExample.ViewMode.TrackingCubeOnly:
-                    _axis.SetActive(false);
-                    _trackingCube.SetActive(_targetFound);
-                    _demo.SetActive(false);
-                    break;
-                case ImageTrackingExample.ViewMode.DemoOnly:
-                    _axis.SetActive(false);
-                    _trackingCube.SetActive(false);
-                    _demo.SetActive(_targetFound);
+                    georama.SetActive(_targetFound);
                     break;
             }
         }
