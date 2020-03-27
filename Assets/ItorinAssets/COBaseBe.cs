@@ -11,13 +11,14 @@ namespace MagicLeap{
         [SerializeField] string MainHistoryName;
 
         [System.NonSerialized] public bool HinannKanryou=true;
+        public delegate void OnSceneChaned();
+        public OnSceneChaned onSceneChaned;
 
         // Start is called before the first frame update
         void Start()
         {
             // Debug.Log("テストフラグ１３１");
             SceneManager.sceneLoaded += SceneLoaded;
-
         }
 
         // Update is called once per frame
@@ -38,7 +39,7 @@ namespace MagicLeap{
                 {
                     gameObject.transform.parent = imageCube.transform;
 
-
+                    onSceneChaned.Invoke();
                 }
                 else
                 {
