@@ -10,22 +10,19 @@ namespace itorin
         
          NetworkManager_Client networkManager_Client;
 
-
-        // Start is called before the first frame update
         [System.Obsolete]
         void Start()
         {
             networkManager_Client = GameObject.FindGameObjectWithTag("itorinNetwork").GetComponent<NetworkManager_Client>();
         }
 
-        // Update is called once per frame
         void Update()
         {
 
         }
 
         [System.Obsolete]
-        void MaikingPlayer()
+        void MakingPlayer()
         {
             networkManager_Client.RequestCreatingNewAutonomousObject(Player.GetComponent<ReplicatiorBase>(), Player.name, gameObject.transform.position, Quaternion.ToEulerAngles(gameObject.transform.rotation), Players.name);
         }

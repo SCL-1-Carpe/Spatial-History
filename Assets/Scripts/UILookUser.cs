@@ -19,6 +19,5 @@ public class UILookUser : MonoBehaviour
         d -= 1f;
         d = Mathf.Clamp(d, 0.75f, d);
         ui.transform.position = center.transform.position + aim.normalized * d;
-
     }
 }

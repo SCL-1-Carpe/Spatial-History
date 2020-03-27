@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MagicLeap;
 using UnityEngine.XR.MagicLeap;
+using Utils;
 
 public class CharacterController : MonoBehaviour
 {
@@ -30,14 +31,14 @@ public class CharacterController : MonoBehaviour
         float x = controller.ConnectedController.Touch1PosAndForce.x;
         float y = controller.ConnectedController.Touch1PosAndForce.y;
 
-        if (x*x + y*y > 0.3f*0.3f && !isWaving)
+        if (Utility.Distance2D_GT(x, y, 0.3f) && !isWaving)
         {
             animator.SetBool("isWalking", true);
 
             Vector3 d = (transform.position - camera.transform.position).normalized;
             d.y *= 0;
 
-            float axis = Vector3.Angle(new Vector3(0, 0, 1), d);
+            float axis = Vector3.Angle(Vector3.forward, d);
             if (camera.transform.position.x > 0) axis *= -1;
 
             transform.position = new Vector3(transform.position.x, floor.position.y, transform.position.z) + Quaternion.Euler(0, axis, 0) * new Vector3(x, 0, y) * walkSpeed;
