@@ -259,7 +259,7 @@ public class MainManager : MonoBehaviour
 
         //着火
         fire.SetActive(true);
-        yield return PlaneLiftDown(node, 0.15f);
+        yield return PlaneLiftDown(node, 0.2f);
 
         //鎮火、非アクティブ化
         fire.SetActive(false);
