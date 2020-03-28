@@ -662,7 +662,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NetworkId: 0
   DOwnIP: 
-  TargetIP: 
+  TargetIP: 192.168.1.17
   LaunchOnStart: 0
   TcpPortNum: 7890
   UdpPortNum: 7891
