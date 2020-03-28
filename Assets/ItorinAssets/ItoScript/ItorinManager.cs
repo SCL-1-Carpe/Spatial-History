@@ -69,7 +69,7 @@ namespace itorin
         [System.Obsolete]
         void MakingPlayer()
         {
-            networkManager_Client.RequestCreatingNewAutonomousObject(Product2.GetComponent<ReplicatiorBase>(), Product2.name, gameObject.transform.position, Quaternion.ToEulerAngles(gameObject.transform.rotation), Players.name);
+            networkManager_Client.RequestCreatingNewAutonomousObject(Product2.GetComponent<ReplicatiorBase>(), Product2.name, Player.transform.position, Quaternion.ToEulerAngles(Player.transform.rotation), Players.name);
         }
 
 
