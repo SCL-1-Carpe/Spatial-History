@@ -120,6 +120,18 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &67375034 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114463424589709878, guid: 6884f69ad0adbb441905ff499f5d1ece,
+    type: 3}
+  m_PrefabInstance: {fileID: 232925783}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97d97f3bfb1874341bd827a81a6bb64f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &232925783
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -352,10 +364,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c57137213f772d47b88042930e96451, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputModule: {fileID: 0}
+  _inputModule: {fileID: 642701588}
   _beam: {fileID: 551899029}
   _cursorPrefab: {fileID: 1669709384502458, guid: 29528ee004f08ee43824470a516967c6,
     type: 3}
+--- !u!114 &642701588 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5826400374134096828, guid: e3c5fa626556841b481716e7b0efa583,
+    type: 3}
+  m_PrefabInstance: {fileID: 1804920270}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12c0ffe7b5b6b484cae96ea8ed89bc3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &777753354
 GameObject:
   m_ObjectHideFlags: 0
@@ -627,6 +651,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1495218536}
   - component: {fileID: 1495218537}
+  - component: {fileID: 1495218538}
   m_Layer: 0
   m_Name: NetWork
   m_TagString: itorinNetwork
@@ -662,11 +687,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NetworkId: 0
   DOwnIP: 
-  TargetIP: 192.168.1.17
+  TargetIP: 192.168.1.47
   LaunchOnStart: 0
   TcpPortNum: 7890
   UdpPortNum: 7891
   ClientUpdateInterval: 0.033
+--- !u!114 &1495218538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495218535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db758fabd16964c0bb96897f2e889e87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  client: {fileID: 1495218537}
 --- !u!1001 &1600820075
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -737,6 +775,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24158fb1437dc8e418d893939758764d, type: 3}
+--- !u!20 &1600820076 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 20294507499185110, guid: 24158fb1437dc8e418d893939758764d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1600820075}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1804920270
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -813,6 +857,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4777587361463441356, guid: a905912292afb48adb70d975b84debe6,
+        type: 3}
+      propertyPath: _controllerConnectionHandler
+      value: 
+      objectReference: {fileID: 67375034}
+    - target: {fileID: 4777910957211083216, guid: a905912292afb48adb70d975b84debe6,
+        type: 3}
+      propertyPath: _controllerConnectionHandler
+      value: 
+      objectReference: {fileID: 67375034}
     - target: {fileID: 4889547085400783902, guid: a905912292afb48adb70d975b84debe6,
         type: 3}
       propertyPath: m_Name
@@ -1003,6 +1057,21 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: Input1
       objectReference: {fileID: 0}
+    - target: {fileID: 4889547086959887939, guid: a905912292afb48adb70d975b84debe6,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 998423659}
+    - target: {fileID: 4889547086959887939, guid: a905912292afb48adb70d975b84debe6,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: IPChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 4889547087027568916, guid: a905912292afb48adb70d975b84debe6,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 1600820076}
     - target: {fileID: 4889547087099753043, guid: a905912292afb48adb70d975b84debe6,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -1012,6 +1081,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: Input4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4889547087130394966, guid: a905912292afb48adb70d975b84debe6,
+        type: 3}
+      propertyPath: m_Text
+      value: 192.168.1.17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a905912292afb48adb70d975b84debe6, type: 3}

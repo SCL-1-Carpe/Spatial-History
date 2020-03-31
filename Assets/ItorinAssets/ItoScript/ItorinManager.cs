@@ -16,6 +16,7 @@ namespace itorin
         //[SerializeField] COBaseBe cOBaseBe;
 
         [SerializeField] int PlayerNumber;
+
         [SerializeField] GameObject Player1, Player2;
 
         [SerializeField] GameObject Pal, Pal2;
@@ -28,6 +29,11 @@ namespace itorin
         void Start()
         {
             networkManager_Client = GameObject.FindGameObjectWithTag("itorinNetwork").GetComponent<NetworkManager_Client>();
+
+            if (networkManager_Client==null)
+            {
+                Debug.Log("asas");
+            }
 
             OnNextScene();
 
@@ -70,6 +76,7 @@ namespace itorin
         void MakingPlayer()
         {
             networkManager_Client.RequestCreatingNewAutonomousObject(Product2.GetComponent<ReplicatiorBase>(), Product2.name, Player.transform.position, Quaternion.ToEulerAngles(Player.transform.rotation), Players.name);
+
         }
 
 
