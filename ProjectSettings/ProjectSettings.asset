@@ -664,7 +664,7 @@ PlayerSettings:
     m_ModelFolderPath: 
     m_PortalFolderPath: 
   luminCert:
-    m_CertPath: C:/Users/SCL01/TaikiTakami/privatekey/takamisclml.cert
+    m_CertPath: C:/Users/SCL01/TaikiTakami/privatekey/takamiml.cert
     m_SignPackage: 1
   luminIsChannelApp: 0
   luminVersion:
